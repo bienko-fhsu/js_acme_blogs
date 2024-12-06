@@ -12,28 +12,89 @@ function createElemWithText(elementType = "p", textContent = "", className) {
 }
 
 function createSelectOptions(jsonData) {
-  if (jsonData == null) return undefined;
+  if (!jsonData) return;
+  const optionElemArr = [];
+  jsonData.forEach((user) => {
+    const newOptionElem = document.createElement("option");
+    newOptionElem.value = user.id;
+    newOptionElem.textContent = user.name;
+    optionElemArr.push(newOptionElem);
+  });
+  return optionElemArr;
 }
 
-function toggleCommentSection() {}
+function toggleCommentSection(postId) {
+  const mySectionElem = document.querySelector(
+    'section[data-post-id="' + postId + '"]'
+  );
+  if (mySectionElem) {
+    mySectionElem.classList.toggle("hide");
+  }
+  return mySectionElem;
+}
 
-function toggleCommentButton() {}
+function toggleCommentButton(postId) {
+  const myButton = document.querySelector(
+    'button[data-post-id="' + postId + '"]'
+  );
+  if (myButton) {
+    if (myButton.textContent == "Show Comments") {
+      myButton.textContent = "Hide Comments";
+    } else if (myButton.textContent == "Hide Comments") {
+      myButton.textContent = "Show Comments";
+    }
+  }
+  return myButton;
+}
 
 function deleteChildElements(parentElement) {
+  if (!(parentElement instanceof HTMLElement)) return;
   let child = parentElement.lastElementChild;
   while (child) {
-    parentElement.removeChild;
+    parentElement.removeChild(child);
     child = parentElement.lastElementChild;
   }
   return parentElement;
 }
 
-function addButtonListeners() {}
+function addButtonListeners() {
+  const buttons = document.querySelectorAll("main button");
+  if (!buttons) return;
+  for (let i = 0; i < buttons.length; i++) {
+    if (!("postId" in buttons[i].dataset)) continue;
+    const postId = buttons[i].dataset.postId;
+    buttons[i].addEventListener("click", function (event) {
+      toggleComments(event, postId);
+    });
+  }
+  return buttons;
+}
 
-function removeButtonListeners() {}
+function removeButtonListeners() {
+  const buttons = document.querySelectorAll("main button");
+  if (!buttons) return;
+  for (let i = 0; i < buttons.length; i++) {
+    if (!("postId" in buttons[i].dataset)) continue;
+    const postId = buttons[i].dataset.postId;
+    buttons[i].removeEventListener("click", function (event) {
+      toggleComments(event, postId);
+    });
+  }
+  return buttons;
+}
 
 function createComments(jsonCommentData) {
+  if (!jsonCommentData) return;
   const newFragmentElement = document.createDocumentFragment();
+  jsonCommentData.forEach((comment) => {
+    const newArticle = document.createElement("article");
+    const newH3Elem = createElemWithText("h3", comment.name);
+    const newPElem1 = createElemWithText("p", comment.body);
+    const newPElem2 = createElemWithText("p", `From: ${comment.email}`);
+    newArticle.append(newH3Elem, newPElem1, newPElem2);
+    newFragmentElement.append(newArticle);
+  });
+  return newFragmentElement;
 }
 
 function populateSelectMenu(jsonUserData) {}
@@ -74,4 +135,6 @@ function initApp() {
   initPage();
 }
 
-//addEventListener
+document.addEventListener("DOMContentLoaded", (event) => {
+  initApp();
+});
