@@ -97,29 +97,116 @@ function createComments(jsonCommentData) {
   return newFragmentElement;
 }
 
-function populateSelectMenu(jsonUserData) {}
+function populateSelectMenu(jsonUserData) {
+  if (!jsonUserData) return;
+  const menu = document.querySelector("#selectMenu");
+  if (!menu) return;
+  const options = createSelectOptions(jsonUserData);
+  for (let i = 0; i < options.length; i++) {
+    menu.append(options[i]);
+  }
+  return menu;
+}
 
 async function getUsers() {
-  const response = await fetch("https://jsonplaceholder.typicode.com/users");
-  const jsonUserData = await response.json();
-  return jsonUserData;
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+    const jsonUsersData = await response.json();
+    return jsonUsersData;
+  } catch (e) {
+    console.log(e);
+  }
 }
 
-async function getUserPosts() {
-  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const jsonPostsData = await response.json();
-  return jsonPostsData;
+async function getUserPosts(userId) {
+  if (!userId) return;
+  try {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/posts?userId=" + userId
+    );
+    const jsonPostsData = await response.json();
+    return jsonPostsData;
+  } catch (e) {
+    console.log(e);
+  }
 }
 
-async function getUser(userId) {}
+async function getUser(userId) {
+  if (!userId) return;
+  try {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/users/" + userId
+    );
+    const jsonUserData = await response.json();
+    return jsonUserData;
+  } catch (e) {
+    console.log(e);
+  }
+}
 
-async function getPostComments(postId) {}
+async function getPostComments(postId) {
+  if (!postId) return;
+  try {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/comments?postId=" + postId
+    );
+    const jsonCommentData = await response.json();
+    return jsonCommentData;
+  } catch (e) {
+    console.log(e);
+  }
+}
 
-async function displayComments() {}
+async function displayComments(postId) {
+  if (!postId) return;
+  const section = document.createElement("section");
+  section.dataset.postId = postId;
+  section.classList.add("comments");
+  section.classList.add("hide");
+  const comments = await getPostComments(postId);
+  const fragment = createComments(comments);
+  section.append(fragment);
+  return section;
+}
 
-async function createPosts() {}
+async function createPosts(jsonPostsData) {
+  if (!jsonPostsData) return;
+  const fragment = document.createDocumentFragment();
+  for (const post of jsonPostsData) {
+    const article = document.createElement("article");
+    const h2 = createElemWithText("h2", post.title);
+    const p1 = createElemWithText("p", post.body);
+    const p2 = createElemWithText("p", `Post ID: ${post.id}`);
+    const author = await getUser(post.userId);
+    const p3 = createElemWithText(
+      "p",
+      `Author: ${author.name} with ${author.company.name}`
+    );
+    const p4 = createElemWithText("p", author.company.catchPhrase);
+    const commButton = createElemWithText("button", "Show Comments");
+    commButton.dataset.postId = post.id;
+    article.append(h2, p1, p2, p3, p4, commButton);
+    const section = await displayComments(post.id);
+    article.append(section);
+    fragment.append(article);
+  }
+  return fragment;
+}
 
-async function displayPosts() {}
+async function displayPosts(jsonPostsData) {
+  const main = document.querySelector("main");
+  if (jsonPostsData) {
+    const element = await createPosts(post);
+  } else {
+    const element = createElemWithText(
+      "p",
+      "Select an Employee to display their posts.",
+      "default-text"
+    );
+  }
+  main.append(element);
+  return element;
+}
 
 function toggleComments(clickEvent, postId) {}
 
