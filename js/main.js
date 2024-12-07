@@ -24,6 +24,7 @@ function createSelectOptions(jsonData) {
 }
 
 function toggleCommentSection(postId) {
+  if (!postId) return;
   const mySectionElem = document.querySelector(
     'section[data-post-id="' + postId + '"]'
   );
@@ -34,6 +35,7 @@ function toggleCommentSection(postId) {
 }
 
 function toggleCommentButton(postId) {
+  if (!postId) return;
   const myButton = document.querySelector(
     'button[data-post-id="' + postId + '"]'
   );
@@ -130,7 +132,6 @@ async function getUserPosts(userId) {
     console.log(e);
   }
 }
-
 async function getUser(userId) {
   if (!userId) return;
   try {
@@ -197,7 +198,7 @@ async function displayPosts(jsonPostsData) {
   const main = document.querySelector("main");
   let element = undefined;
   if (jsonPostsData) {
-    element = await createPosts(post);
+    element = await createPosts(jsonPostsData);
   } else {
     element = createElemWithText(
       "p",
@@ -227,8 +228,6 @@ async function refreshPosts(jsonPostsData) {
 }
 
 async function selectMenuChangeEventHandler(event) {
-  //if (!event) return;
-  //if (!event?.type) return;
   if (event?.type != "change") return;
   if (event.target) event.target.disabled = true;
   let userId = event.target?.value || 1;
