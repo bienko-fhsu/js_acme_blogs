@@ -240,11 +240,15 @@ async function selectMenuChangeEventHandler(event) {
 }
 
 async function initPage() {
-  await getUsers();
+  const jsonUsersData = await getUsers();
+  const select = populateSelectMenu(jsonUsersData);
+  return [jsonUsersData, select];
 }
 
 function initApp() {
   initPage();
+  const selectMenu = document.querySelector("#selectMenu");
+  selectMenu.addEventListener("change", selectMenuChangeEventHandler);
 }
 
 document.addEventListener("DOMContentLoaded", (event) => {
