@@ -226,7 +226,18 @@ async function refreshPosts(jsonPostsData) {
   return [removeButtons, main, fragment, addButtons];
 }
 
-async function selectMenuChangeEventHandler() {}
+async function selectMenuChangeEventHandler(event) {
+  //if (!event) return;
+  //if (!event?.type) return;
+  if (event?.type != "change") return;
+  if (event.target) event.target.disabled = true;
+  let userId = event.target?.value || 1;
+  if (userId === "Employees") userId = 1;
+  const jsonPostsData = await getUserPosts(userId);
+  const refreshPostsArray = await refreshPosts(jsonPostsData);
+  if (event?.target) event.target.disabled = false;
+  return [userId, jsonPostsData, refreshPostsArray];
+}
 
 async function initPage() {
   await getUsers();
