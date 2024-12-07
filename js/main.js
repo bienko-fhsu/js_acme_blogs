@@ -253,5 +253,3 @@ function initApp() {
 document.addEventListener("DOMContentLoaded", (event) => {
   initApp();
 });
-
-//check
