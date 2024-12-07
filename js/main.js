@@ -195,10 +195,11 @@ async function createPosts(jsonPostsData) {
 
 async function displayPosts(jsonPostsData) {
   const main = document.querySelector("main");
+  let element = undefined;
   if (jsonPostsData) {
-    const element = await createPosts(post);
+    element = await createPosts(post);
   } else {
-    const element = createElemWithText(
+    element = createElemWithText(
       "p",
       "Select an Employee to display their posts.",
       "default-text"
@@ -208,9 +209,22 @@ async function displayPosts(jsonPostsData) {
   return element;
 }
 
-function toggleComments(clickEvent, postId) {}
+function toggleComments(event, postId) {
+  if (!event || !postId) return;
+  event.target.listener = true;
+  const section = toggleCommentSection(postId);
+  const button = toggleCommentButton(postId);
+  return [section, button];
+}
 
-async function refreshPosts(jsonPostsData) {}
+async function refreshPosts(jsonPostsData) {
+  if (!jsonPostsData) return;
+  const removeButtons = removeButtonListeners();
+  const main = deleteChildElements(document.querySelector("main"));
+  const fragment = await displayPosts(jsonPostsData);
+  const addButtons = addButtonListeners();
+  return [removeButtons, main, fragment, addButtons];
+}
 
 async function selectMenuChangeEventHandler() {}
 
